@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClassHub - Sala de Aula Virtual</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- TELA DE REGISTRO / LOGIN -->
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2>Bem-vindo ao ClassHub 🚀</h2>
+            <p>Entre com sua conta para acessar a sala de aula.</p>
+
+            <form id="form-login">
+                <div class="input-group signup-only hidden">
+                    <label for="nome-aluno">Seu Nome *</label>
+                    <input type="text" id="nome-aluno" placeholder="Ex: Rafaela Ferreira" maxlength="40">
+                </div>
+
+                <div class="input-group signup-only hidden">
+                    <label for="numero-chamada">Número da Chamada (Opcional)</label>
+                    <input type="number" id="numero-chamada" placeholder="Ex: 15" min="1">
+                </div>
+
+                <div class="input-group">
+                    <label for="email">E-mail *</label>
+                    <input type="email" id="email" placeholder="voce@exemplo.com" required autocomplete="email">
+                </div>
+
+                <div class="input-group">
+                    <label for="senha">Senha *</label>
+                    <input type="password" id="senha" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="current-password">
+                </div>
+
+                <p id="login-msg" class="login-msg hidden" role="alert"></p>
+
+                <button type="submit" id="btn-login-submit" class="btn-primary">Entrar</button>
+                <button type="button" id="btn-toggle-mode" class="btn-link">Primeiro acesso? Criar conta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ESTRUTURA PRINCIPAL DO SITE -->
+    <div id="app-container" class="app-container hidden">
+
+        <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+        <!-- BARRA LATERAL (ESTILO DISCORD) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="server-header">
+                <h3>📚 Turma 2º Ano A</h3>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="menu-title">Navegação</div>
+                <button class="nav-btn active" data-view="chat">💬 Bate-Papo</button>
+                <button class="nav-btn" data-view="atividades">📋 Atividades</button>
+                <button class="nav-btn" data-view="perfil">👤 Meu Perfil</button>
+                <button class="nav-btn admin-only hidden" data-view="admin">⚙️ Painel do Criador</button>
+            </nav>
+
+            <div class="channels-section">
+                <div class="menu-title">Canais de Conversa</div>
+                <div class="channel-list">
+                    <button type="button" class="channel-item active" data-channel="geral"># 💬-geral</button>
+                    <button type="button" class="channel-item" data-channel="matematica"># 📐-matemática</button>
+                    <button type="button" class="channel-item" data-channel="portugues"># 📚-português</button>
+                    <button type="button" class="channel-item" data-channel="duvidas"># ❓-dúvidas</button>
+                </div>
+            </div>
+
+            <div class="user-footer">
+                <div class="user-avatar" id="user-avatar-tag">U</div>
+                <div class="user-info">
+                    <span id="user-name-display">Nome</span>
+                    <small id="user-role-display">Aluno</small>
+                </div>
+                <button id="btn-logout" title="Sair" aria-label="Sair">🚪</button>
+            </div>
+        </aside>
+
+        <!-- ÁREA CENTRAL DE CONTEÚDO -->
+        <main class="main-content">
+
+            <div class="mobile-bar">
+                <button id="btn-menu" type="button" aria-label="Abrir menu" aria-controls="sidebar">☰</button>
+                <span>📚 Turma 2º Ano A</span>
+            </div>
+
+            <!-- 1. CHAT -->
+            <section id="view-chat" class="view-section">
+                <header class="content-header">
+                    <h2 id="current-channel-title"># 💬-geral</h2>
+                    <p>Espaço para bate-papo e troca de ideias com a turma.</p>
+                </header>
+
+                <div class="chat-messages-container" id="chat-messages"></div>
+
+                <form id="form-chat" class="chat-input-container">
+                    <input type="text" id="chat-input" placeholder="Enviar mensagem em # 💬-geral..." autocomplete="off" maxlength="500" aria-label="Mensagem">
+                    <button type="submit" class="btn-send">Enviar</button>
+                </form>
+            </section>
+
+            <!-- 2. ATIVIDADES -->
+            <section id="view-atividades" class="view-section hidden">
+                <header class="content-header header-flex">
+                    <div>
+                        <h2>📋 Mural de Atividades</h2>
+                        <p>Acompanhe, publique e gerencie as tarefas da sala.</p>
+                    </div>
+                    <button id="btn-open-task-modal" class="btn-primary btn-auto">+ Criar Atividade</button>
+                </header>
+
+                <div class="sub-nav">
+                    <button class="sub-btn active" data-subview="pendentes">⏳ Pendentes (<span id="count-pendentes">0</span>)</button>
+                    <button class="sub-btn" data-subview="concluidas">✅ Concluídas (<span id="count-concluidas">0</span>)</button>
+                </div>
+
+                <div class="atividades-grid" id="atividades-list"></div>
+            </section>
+
+            <!-- 3. PERFIL -->
+            <section id="view-perfil" class="view-section hidden">
+                <header class="content-header">
+                    <h2>👤 Meu Perfil</h2>
+                </header>
+
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar-large" id="profile-big-avatar">U</div>
+                        <div class="profile-details">
+                            <h3 id="profile-name">Nome do Aluno</h3>
+                            <p id="profile-number">Número da chamada: --</p>
+                            <span class="badge-role" id="profile-role-badge">Aluno</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="stat-box">
+                            <h4>Status na Plataforma</h4>
+                            <span class="online-indicator">🟢 Conectado</span>
+                        </div>
+                        <div class="stat-box">
+                            <h4>Minhas Tarefas Concluídas</h4>
+                            <span id="profile-tasks-count">0 Atividades</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. PAINEL DO CRIADOR / ADMIN -->
+            <section id="view-admin" class="view-section hidden">
+                <header class="content-header">
+                    <h2>⚙️ Painel do Criador</h2>
+                    <p>Controle de alunos cadastrados na sala virtual.</p>
+                </header>
+
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <h3>👥 Alunos Cadastrados</h3>
+                        <ul class="admin-list" id="admin-user-list"></ul>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL PARA ADICIONAR / EDITAR ATIVIDADE -->
+    <div id="task-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h2 id="task-modal-title">Nova Atividade</h2>
+            <form id="form-atividade">
+                <input type="hidden" id="task-edit-id">
+
+                <div class="input-group">
+                    <label for="task-title">Título da Atividade *</label>
+                    <input type="text" id="task-title" placeholder="Ex: Exercícios de Álgebra" required maxlength="80">
+                </div>
+
+                <div class="input-group">
+                    <label for="task-subject">Matéria *</label>
+                    <input type="text" id="task-subject" placeholder="Ex: Matemática" required maxlength="40">
+                </div>
+
+                <div class="input-group">
+                    <label for="task-date">Data de Entrega *</label>
+                    <input type="date" id="task-date" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" id="btn-cancel-task" class="btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar Atividade</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
